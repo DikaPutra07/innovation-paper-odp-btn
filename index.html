@@ -1,41 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Business Mapping</title>
-
+  
   <!-- LEAFLET -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"
-  />
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  
   <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
-
 </head>
 
 <body>
-
   <!-- MAP -->
-  <div id="map"></div>
+  <div id="map">
+    <!-- TOGGLE BUTTON DI MAP (muncul saat sidebar kehidden) -->
+    <button id="toggleSidebarBtn" class="toggle-btn-map" onclick="toggleSidebar()">
+      ☰
+    </button>
+  </div>
 
   <!-- SIDEBAR -->
   <div id="sidebar">
-
     <div id="sidebar-header">
-
-      <h2>📍 Business List</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="margin: 0;">📍 Business List</h2>
+        <!-- TOGGLE BUTTON DI SIDEBAR -->
+        <button onclick="toggleSidebar()" style="
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          padding: 5px 10px;
+          border-radius: 5px;
+        " title="Sembunyikan Sidebar">
+          ✕
+        </button>
+      </div>
 
       <!-- SEARCH -->
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Cari tempat..."
-      />
+      <input type="text" id="searchInput" placeholder="Cari tempat..." />
 
       <!-- FILTER STATUS -->
       <select id="statusFilter">
@@ -47,9 +52,7 @@
 
       <!-- FILTER CATEGORY -->
       <select id="categoryFilter">
-
         <option value="">Semua Kategori</option>
-
         <option value="cafe">Kafe</option>
         <option value="car_repair">Bengkel</option>
         <option value="clinic">Klinik</option>
@@ -61,9 +64,7 @@
         <option value="pharmacy">Toko Obat</option>
         <option value="restaurant">Restoran</option>
         <option value="supermarket">Supermarket</option>
-
       </select>
-
     </div>
 
     <!-- LIST -->
@@ -71,16 +72,13 @@
 
     <!-- PAGINATION -->
     <div id="pagination"></div>
-
   </div>
 
   <!-- LIBRARIES -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-
+  
   <!-- APP -->
   <script src="app.js"></script>
-
 </body>
 </html>
