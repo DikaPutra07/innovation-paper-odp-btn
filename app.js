@@ -1,0 +1,301 @@
+const SHEET_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6tFK2BQkjWzqp2Ot__bZiDWRCuCFHpXqTC8xKM00KJKDGEyctEUisS8VfoZykvBiUrrzSrc-11-CE/pub?output=csv";
+
+const ITEMS_PER_PAGE = 25;
+
+let allPlaces = [];
+let filteredPlaces = [];
+let currentPage = 1;
+
+// =========================
+// MAP
+// =========================
+const map = L.map('map').setView(
+  [-6.9147, 107.6098],
+  14
+);
+
+L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution: '&copy; OpenStreetMap'
+  }
+).addTo(map);
+
+// =========================
+// CATEGORY LABEL
+// =========================
+const categoryMap = {
+  cafe: "Kafe",
+  car_repair: "Bengkel",
+  clinic: "Klinik",
+  convenience: "Minimarket",
+  electronics: "Toko Elektronik",
+  hardware: "Toko Perkakas",
+  hospital: "Rumah Sakit",
+  laundry: "Laundry",
+  pharmacy: "Toko Obat",
+  restaurant: "Restoran",
+  supermarket: "Supermarket"
+};
+
+// =========================
+// COLOR
+// =========================
+function getColor(status) {
+
+  if (!status) return "blue";
+
+  status = status.toLowerCase().trim();
+
+  if (status.includes("belum")) return "gray";
+  if (status.includes("dikunjungi")) return "orange";
+  if (status.includes("closing")) return "green";
+
+  return "blue";
+}
+
+// =========================
+// LOAD DATA
+// =========================
+Papa.parse(SHEET_URL, {
+
+  download: true,
+  header: true,
+
+  complete: function(results) {
+
+    results.data.forEach(row => {
+
+      if (!row.lat || !row.lng) return;
+
+      const lat = parseFloat(row.lat);
+      const lng = parseFloat(row.lng);
+
+      if (isNaN(lat) || isNaN(lng)) return;
+
+      const color = getColor(row.status);
+
+      const marker = L.circleMarker([lat, lng], {
+
+        radius: 8,
+        color,
+        fillColor: color,
+        fillOpacity: 0.8
+
+      }).addTo(map);
+
+        marker.bindPopup(`
+
+        <div style="min-width:200px;">
+
+            <h3 style="margin:0 0 10px 0;">
+            ${row.nama}
+            </h3>
+
+            <div>
+            <b>Status:</b> ${row.status}
+            </div>
+
+            <div>
+            <b>Category:</b> ${row.category}
+            </div>
+
+            <br>
+
+            <a
+            href="https://www.google.com/maps/dir/?api=1&destination=${row.lat},${row.lng}"
+            target="_blank"
+            style="
+                display:inline-block;
+                padding:8px 12px;
+                background:#4285F4;
+                color:white;
+                text-decoration:none;
+                border-radius:8px;
+                font-size:14px;
+            "
+            >
+            📍 Navigasi Google Maps
+            </a>
+
+        </div>
+
+        `);
+
+      allPlaces.push({
+        ...row,
+        lat,
+        lng,
+        marker
+      });
+
+    });
+
+    filteredPlaces = allPlaces;
+
+    renderSidebar();
+
+  }
+});
+
+// =========================
+// RENDER SIDEBAR
+// =========================
+function renderSidebar() {
+
+  const placeList =
+    document.getElementById("place-list");
+
+  placeList.innerHTML = "";
+
+  const start =
+    (currentPage - 1) * ITEMS_PER_PAGE;
+
+  const end =
+    start + ITEMS_PER_PAGE;
+
+  const pageItems =
+    filteredPlaces.slice(start, end);
+
+  pageItems.forEach(place => {
+
+    const card =
+      document.createElement("div");
+
+    card.className = "place-card";
+
+    card.innerHTML = `
+      <div class="place-title">
+        ${place.nama}
+      </div>
+
+      <div class="place-category">
+        ${categoryMap[place.category] || place.category}
+      </div>
+
+      <div class="place-status status-${place.status}">
+        ${place.status}
+      </div>
+    `;
+
+    card.addEventListener("click", () => {
+
+      map.flyTo(
+        [place.lat, place.lng],
+        18,
+        { duration: 1.5 }
+      );
+
+      place.marker.openPopup();
+
+    });
+
+    placeList.appendChild(card);
+
+  });
+
+  renderPagination();
+}
+
+// =========================
+// FILTER
+// =========================
+function applyFilter() {
+
+  const search =
+    document
+      .getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+  const status =
+    document
+      .getElementById("statusFilter")
+      .value;
+
+  const category =
+    document
+      .getElementById("categoryFilter")
+      .value;
+
+  filteredPlaces = allPlaces.filter(place => {
+
+    const matchSearch =
+      place.nama?.toLowerCase().includes(search);
+
+    const matchStatus =
+      !status ||
+      place.status === status;
+
+    const matchCategory =
+      !category ||
+      place.category === category;
+
+    return (
+      matchSearch &&
+      matchStatus &&
+      matchCategory
+    );
+
+  });
+
+  currentPage = 1;
+
+  renderSidebar();
+}
+
+// =========================
+// PAGINATION
+// =========================
+function renderPagination() {
+
+  const totalPages =
+    Math.ceil(
+      filteredPlaces.length /
+      ITEMS_PER_PAGE
+    );
+
+  const pagination =
+    document.getElementById("pagination");
+
+  pagination.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+
+    const btn =
+      document.createElement("button");
+
+    btn.innerText = i;
+
+    if (i === currentPage) {
+      btn.style.fontWeight = "bold";
+    }
+
+    btn.addEventListener("click", () => {
+
+      currentPage = i;
+
+      renderSidebar();
+
+    });
+
+    pagination.appendChild(btn);
+
+  }
+}
+
+// =========================
+// EVENT LISTENER
+// =========================
+document
+  .getElementById("searchInput")
+  .addEventListener("input", applyFilter);
+
+document
+  .getElementById("statusFilter")
+  .addEventListener("change", applyFilter);
+
+document
+  .getElementById("categoryFilter")
+  .addEventListener("change", applyFilter);
