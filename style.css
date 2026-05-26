@@ -187,3 +187,12 @@ select {
     right: 10px;
   }
 }
+
+/* =========================
+   LOADING STATE SAAT FLY
+========================= */
+.place-card:active {
+  background: #e3f2fd;
+  transform: scale(0.98);
+  transition: 0.1s;
+}

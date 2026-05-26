@@ -230,13 +230,28 @@ function renderSidebar() {
 
     card.addEventListener("click", () => {
 
-      map.flyTo(
-        [place.lat, place.lng],
-        18,
-        { duration: 1.5 }
-      );
+      // AUTO CLOSE SIDEBAR DULU
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.getElementById('toggleSidebarBtn');
+      
+      if (!sidebar.classList.contains('hidden')) {
+        sidebar.classList.add('hidden');
+        toggleBtn.classList.add('show');
+      }
 
-      place.marker.openPopup();
+      // FLY TO LOCATION setelah animasi sidebar selesai
+      setTimeout(() => {
+        map.flyTo(
+          [place.lat, place.lng],
+          18,
+          { duration: 1.5 }
+        );
+
+        place.marker.openPopup();
+
+        // Trigger map resize setelah sidebar ketutup
+        map.invalidateSize();
+      }, 400); // Delay 400ms = durasi animasi sidebar
 
     });
 
