@@ -101,14 +101,63 @@ Papa.parse(SHEET_URL, {
             <b>Category:</b> ${row.category}
             </div>
 
+            <div>
+            <b>Cabang:</b> ${row.cabang}
+            </div>
+
             <br>
+
+            <!-- BUTTON NOTES -->
+            <button 
+              onclick="
+                const notesDiv = document.getElementById('notes-${row.nama.replace(/[^a-zA-Z0-9]/g, '_')}');
+                if(notesDiv.style.display === 'none') {
+                  notesDiv.style.display = 'block';
+                  this.textContent = '📝 Sembunyikan Notes';
+                } else {
+                  notesDiv.style.display = 'none';
+                  this.textContent = '📝 Lihat Notes';
+                }
+              "
+              style="
+                display:inline-block;
+                padding:8px;
+                background:#34A853;
+                color:white;
+                border:none;
+                border-radius:8px;
+                font-size:14px;
+                cursor:pointer;
+                // margin-bottom:10px;
+                // width:100%;
+              "
+            >
+              📝 Lihat Notes
+            </button>
+
+            <!-- NOTES CONTENT (HIDDEN BY DEFAULT) -->
+            <div 
+              id="notes-${row.nama.replace(/[^a-zA-Z0-9]/g, '_')}"
+              style="
+                display:none;
+                background:#f9f9f9;
+                padding:10px;
+                border-radius:8px;
+                margin-bottom:10px;
+                border-left:4px solid #34A853;
+                max-width:300px;
+                word-wrap:break-word;
+                white-space:pre-wrap;
+              "
+            >${row.notes || 'Tidak ada notes'}
+            </div>
 
             <a
             href="https://www.google.com/maps/dir/?api=1&destination=${row.lat},${row.lng}"
             target="_blank"
             style="
                 display:inline-block;
-                padding:8px 12px;
+                padding:8px;
                 background:#4285F4;
                 color:white;
                 text-decoration:none;
@@ -116,7 +165,7 @@ Papa.parse(SHEET_URL, {
                 font-size:14px;
             "
             >
-            📍 Navigasi Google Maps
+            📍 Google Maps
             </a>
 
         </div>
@@ -299,3 +348,77 @@ document
 document
   .getElementById("categoryFilter")
   .addEventListener("change", applyFilter);
+
+
+setInterval(() => {
+  // Clear data lama
+  allPlaces = [];
+  
+  // Hapus semua marker dari map
+  map.eachLayer((layer) => {
+    if (layer instanceof L.CircleMarker) {
+      map.removeLayer(layer);
+    }
+  });
+  
+  // Fetch ulang data
+  Papa.parse(SHEET_URL, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      results.data.forEach(row => {
+        if (!row.lat || !row.lng) return;
+        
+        const lat = parseFloat(row.lat);
+        const lng = parseFloat(row.lng);
+        
+        if (isNaN(lat) || isNaN(lng)) return;
+        
+        const color = getColor(row.status);
+        
+        const marker = L.circleMarker([lat, lng], {
+          radius: 8,
+          color,
+          fillColor: color,
+          fillOpacity: 0.8
+        }).addTo(map);
+        
+        // Copy popup yang sama kayak sebelumnya
+        marker.bindPopup(`
+          <div style="min-width:200px;">
+            <h3 style="margin:0 0 10px 0;">${row.nama}</h3>
+            <div><b>Status:</b> ${row.status}</div>
+            <div><b>Category:</b> ${row.category}</div>
+            <div><b>Cabang:</b> ${row.cabang}</div>
+            <br>
+            <button onclick="
+              const notesDiv = document.getElementById('notes-${row.nama.replace(/[^a-zA-Z0-9]/g, '_')}');
+              if(notesDiv.style.display === 'none') {
+                notesDiv.style.display = 'block';
+                this.textContent = '📝 Sembunyikan Notes';
+              } else {
+                notesDiv.style.display = 'none';
+                this.textContent = '📝 Lihat Notes';
+              }
+            " style="display:inline-block;padding:8px 12px;background:#34A853;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-bottom:10px;width:100%;">
+              📝 Lihat Notes
+            </button>
+            <div id="notes-${row.nama.replace(/[^a-zA-Z0-9]/g, '_')}" style="display:none;background:#f9f9f9;padding:10px;border-radius:8px;margin-bottom:10px;border-left:4px solid #34A853;max-width:300px;word-wrap:break-word;white-space:pre-wrap;">
+              ${row.notes || 'Tidak ada notes'}
+            </div>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${row.lat},${row.lng}" target="_blank" style="display:inline-block;padding:8px 12px;background:#4285F4;color:white;text-decoration:none;border-radius:8px;font-size:14px;">
+              📍 Navigasi Google Maps
+            </a>
+          </div>
+        `);
+        
+        allPlaces.push({ ...row, lat, lng, marker });
+      });
+      
+      filteredPlaces = allPlaces;
+      currentPage = Math.min(currentPage, Math.ceil(filteredPlaces.length / ITEMS_PER_PAGE));
+      renderSidebar();
+      console.log('✅ Data updated:', new Date().toLocaleTimeString());
+    }
+  });
+}, 300000);
