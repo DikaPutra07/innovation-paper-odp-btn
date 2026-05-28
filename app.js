@@ -282,6 +282,11 @@ function applyFilter() {
     document
       .getElementById("categoryFilter")
       .value;
+  
+  const cabang = 
+    document  
+      .getElementById("cabangFilter")
+      .value;
 
   filteredPlaces = allPlaces.filter(place => {
 
@@ -296,10 +301,15 @@ function applyFilter() {
       !category ||
       place.category === category;
 
+    const matchCabang = 
+      !cabang ||
+      place.cabang === cabang;
+
     return (
       matchSearch &&
       matchStatus &&
-      matchCategory
+      matchCategory &&
+      matchCabang
     );
 
   });
@@ -364,6 +374,10 @@ document
   .getElementById("categoryFilter")
   .addEventListener("change", applyFilter);
 
+document
+  .getElementById("cabangFilter")
+  .addEventListener("change", applyFilter);
+
 // ... semua kode lu yang sebelumnya ...
 
 // =========================
@@ -402,10 +416,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 
-// setInterval(() => {
-//   // Clear data lama
+// const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// (async () => {
+//   while(true){
 //   allPlaces = [];
-  
 //   // Hapus semua marker dari map
 //   map.eachLayer((layer) => {
 //     if (layer instanceof L.CircleMarker) {
@@ -419,6 +434,9 @@ document.addEventListener('keydown', (e) => {
 //     header: true,
 //     complete: function(results) {
 //       results.data.forEach(row => {
+//         if (row.nama == "Radja Ketjil" || row.nama == "Alfamidi"){
+//             console.log(`state ${row.nama}: ${row.status}`)
+//         }
 //         if (!row.lat || !row.lng) return;
         
 //         const lat = parseFloat(row.lat);
@@ -473,4 +491,6 @@ document.addEventListener('keydown', (e) => {
 //       console.log('✅ Data updated:', new Date().toLocaleTimeString());
 //     }
 //   });
-// }, 30000);
+//     await sleep(10000); 
+//   }
+// })();

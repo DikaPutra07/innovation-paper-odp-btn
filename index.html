@@ -26,6 +26,19 @@
     <div id="sidebar-header">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h2 style="margin: 0;">📍 Business List</h2>
+          
+        <!-- TOMBOL HARD REFRESH BARU -->
+        <button onclick="location.reload(true)" style="
+          background: none;
+          border: none;
+          font-size: 20px;
+          cursor: pointer;
+          padding: 5px 10px;
+          border-radius: 5px;
+        " title="Hard Refresh (Clear Cache)">
+          🔄
+        </button>
+
         <!-- TOGGLE BUTTON DI SIDEBAR -->
         <button onclick="toggleSidebar()" style="
           background: none;
@@ -62,10 +75,22 @@
         <option value="hospital">Rumah Sakit</option>
         <option value="laundry">Laundry</option>
         <option value="pharmacy">Toko Obat</option>
-        <option value="restaurant">Restoran</option>
+        <option value="Restaurant">Restoran</option>
         <option value="supermarket">Supermarket</option>
       </select>
+
+      <select id="cabangFilter">
+      <option value="">Semua Cabang</option>
+      <option value="KC BSD">KC BSD</option>
+      <option value="KCP CISAUK">KCP CISAUK</option>
+      <option value="KCP GADING SERPONG">KCP GADING SERPONG</option>
+      <option value="KCP GRAHA RAYA">KCP GRAHA RAYA</option>
+      <option value="KCP MUNCUL">KCP MUNCUL</option>
+      <option value="KCP Sektor 1.1">KCP SEKTOR 1.1</option>
+    </select>
     </div>
+
+
 
     <!-- LIST -->
     <div id="place-list"></div>
