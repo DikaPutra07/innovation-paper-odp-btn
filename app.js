@@ -11,7 +11,7 @@ let currentPage = 1;
 // MAP
 // =========================
 const map = L.map('map').setView(
-  [-6.9147, 107.6098],
+  [-6.280565131187231, 106.66227924919247],
   14
 );
 
@@ -21,6 +21,49 @@ L.tileLayer(
     attribution: '&copy; OpenStreetMap'
   }
 ).addTo(map);
+
+// =========================
+// MARKER CABANG BSD
+// =========================
+const cabangIcon = L.divIcon({
+  className: "custom-cabang-marker",
+  html: `
+    <div style="
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 22px solid #125EFA;
+      // filter: drop-shadow(0 0 6px rgba(230,57,70,0.7));
+    "></div>
+  `,
+  iconSize: [20, 20],
+  iconAnchor: [14, 14]
+});
+
+const cabangMarker = L.marker(
+  [-6.280565131187, 106.662279249],
+  {
+    icon: cabangIcon
+  }
+).addTo(map);
+
+cabangMarker.bindPopup(`
+  <div style="min-width:200px;">
+    
+    <h3 style="
+      margin:0 0 10px 0;
+      color:#000000f;
+    ">
+      🏦 KC Bumi Serpong Damai
+    </h3>
+
+    <div>
+      Kantor Cabang Utama
+    </div>
+
+  </div>
+`);
 
 // =========================
 // CATEGORY LABEL
