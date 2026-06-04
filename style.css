@@ -203,3 +203,50 @@ select {
   transform: scale(1.1) rotate(180deg);
   transition: all 0.3s ease;
 }
+
+#pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+
+  padding:15px;
+}
+
+.page-jump{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.page-jump input{
+
+  width:60px !important;
+  min-width:60px;
+
+  margin:0 !important;
+
+  padding:8px;
+
+  text-align:center;
+
+  border:1px solid #ddd;
+  border-radius:10px;
+
+  flex:none;
+}
+
+.page-jump span{
+  font-weight:600;
+  font-size:16px;
+}
+
+#pagination button{
+
+  width:40px;
+  height:40px;
+
+  margin:0;
+
+  flex:none;
+}

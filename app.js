@@ -368,38 +368,117 @@ function applyFilter() {
 function renderPagination() {
 
   const totalPages =
-    Math.ceil(
-      filteredPlaces.length /
-      ITEMS_PER_PAGE
-    );
+    Math.ceil(filteredPlaces.length / ITEMS_PER_PAGE);
 
   const pagination =
     document.getElementById("pagination");
 
-  pagination.innerHTML = "";
+  pagination.innerHTML = `
 
-  for (let i = 1; i <= totalPages; i++) {
+    <button id="prevPage">
+      ←
+    </button>
 
-    const btn =
-      document.createElement("button");
+    <div class="page-jump">
 
-    btn.innerText = i;
+      <input
+        id="pageInput"
+        type="text"
+        value="${currentPage}"
+      />
 
-    if (i === currentPage) {
-      btn.style.fontWeight = "bold";
-    }
+      <span>/ ${totalPages}</span>
 
-    btn.addEventListener("click", () => {
+    </div>
 
-      currentPage = i;
+    <button id="nextPage">
+      →
+    </button>
+
+  `;
+
+  // PREV
+  document
+    .getElementById("prevPage")
+    .onclick = () => {
+
+      if(currentPage > 1){
+
+        currentPage--;
+
+        renderSidebar();
+
+      }
+
+    };
+
+  // NEXT
+  document
+    .getElementById("nextPage")
+    .onclick = () => {
+
+      if(currentPage < totalPages){
+
+        currentPage++;
+
+        renderSidebar();
+
+      }
+
+    };
+
+  // INPUT PAGE
+  const pageInput =
+    document.getElementById("pageInput");
+
+  pageInput.addEventListener(
+    "keydown",
+    (e) => {
+
+      if(e.key !== "Enter")
+        return;
+
+      const value =
+        pageInput.value.trim();
+
+      // VALIDASI ANGKA
+      if(!/^\d+$/.test(value)){
+
+        alert(
+          "Page harus berupa angka"
+        );
+
+        pageInput.value =
+          currentPage;
+
+        return;
+
+      }
+
+      const page =
+        parseInt(value);
+
+      if(
+        page < 1 ||
+        page > totalPages
+      ){
+
+        alert(
+          `Page harus antara 1 - ${totalPages}`
+        );
+
+        pageInput.value =
+          currentPage;
+
+        return;
+
+      }
+
+      currentPage = page;
 
       renderSidebar();
-
-    });
-
-    pagination.appendChild(btn);
-
-  }
+    }
+  );
 }
 
 // =========================
