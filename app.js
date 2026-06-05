@@ -66,26 +66,141 @@ cabangMarker.bindPopup(`
 `);
 
 // =========================
+// MARKER KCP
+// =========================
+
+const kcpIcon = L.divIcon({
+  className: "custom-kcp-marker",
+  html: `
+    <div style="
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 18px solid #38BDF8;
+    "></div>
+  `,
+  iconSize: [20, 20],
+  iconAnchor: [10, 18]
+});
+
+function addKCP(name, lat, lng) {
+
+  const marker = L.marker(
+    [lat, lng],
+    { icon: kcpIcon }
+  ).addTo(map);
+
+  marker.bindPopup(`
+    <div style="min-width:200px;">
+
+      <h3 style="
+        margin:0 0 10px 0;
+        color:#38BDF8;
+      ">
+        🏦 ${name}
+      </h3>
+
+      <div>
+        Kantor Cabang Pembantu
+      </div>
+
+    </div>
+  `);
+
+}
+
+// =========================
+// DATA KCP
+// =========================
+
+addKCP(
+  "KCP MUNCUL",
+  -6.347782244004288,
+  106.67426257405234
+);
+
+addKCP(
+  "KCP MELATI MAS",
+  -6.268853688569031,
+  106.65486042122218
+);
+
+addKCP(
+  "KCP GRAHA RAYA",
+  -6.232740019224546,
+  106.68080428618055
+);
+
+addKCP(
+  "KCP GADING SERPONG",
+  -6.232302341080241,
+  106.63338648040667
+);
+
+addKCP(
+  "KCP SEKTOR 1.1",
+  -6.305826966299265,
+  106.68047500478252
+);
+
+addKCP(
+  "KCP CISAUK",
+  -6.334566306773266,
+  106.63867189720561
+);
+
+addKCP(
+  "KCP ALAM SUTERA",
+  -6.2429191503806925,
+  106.65395690987083
+);
+
+
+
+// =========================
 // CATEGORY LABEL
 // =========================
-const categoryMap = {
-  cafe: "Kafe",
-  car_repair: "Bengkel",
-  clinic: "Klinik",
-  convenience: "Minimarket",
-  electronics: "Toko Elektronik",
-  hardware: "Toko Perkakas",
-  hospital: "Rumah Sakit",
-  laundry: "Laundry",
-  pharmacy: "Toko Obat",
-  restaurant: "Restoran",
-  supermarket: "Supermarket"
-};
+
+function getCategoryColor(category) {
+
+  const colors = {
+    "Apotek": "#E91E63",                // pink
+    "Bengkel": "#607D8B",               // blue grey
+    "Cafe & Resto": "#ff5900",          // biru
+    "Commercial": "#9C27B0",            // ungu
+    "Dealer": "#f7997d",                // deep orange
+    "Developer": "#795548",             // coklat
+    "Education": "#ff0000",             // indigo
+    "Fashion": "#FF4081",               // pink terang
+    "Furniture": "#8D6E63",             // brown muda
+    "Hiburan": "#673AB7",               // deep purple
+    "Hobby": "#ca8cc9",                 // cyan
+
+    "Tempat Ibadah": "#1a3b59",         // blue
+    "Toko Bangunan": "#A1887F",         // brown
+    "Toko Elektronik": "#3949AB",       // indigo tua
+
+    "Klinik & Rumah Sakit": "#F44336",  // merah
+    "Lainnya": "#546E7A",               // slate
+    "Laundry": "#fed81c",               // cyan terang
+    "Mall": "#AB47BC",                  // purple terang
+    "Petshop": "#FF7043",               // orange coral
+    "Printing & Stationary": "#5C6BC0", // indigo muda
+    "Rent": "#8E24AA",                  // violet
+    "Salon & Beauty": "#EC407A",        // rose
+    "Service": "#7E57C2",               // lavender
+    "SPBU": "#D32F2F",                  // merah tua
+    "Supermarket & Grosir": "#c6f053"   // biru tua
+  };
+
+  return colors[category] || "#ffffff";
+}
 
 // =========================
 // COLOR
 // =========================
-function getColor(status) {
+function getStatusColor(status) {
 
   if (!status) return "blue";
 
@@ -96,6 +211,66 @@ function getColor(status) {
   if (status.includes("closing")) return "green";
 
   return "blue";
+}
+
+function populateCategoryFilter() {
+
+  const categoryFilter =
+    document.getElementById("categoryFilter");
+
+  categoryFilter.innerHTML =
+    `<option value="">Semua Kategori</option>`;
+
+  const categories = [
+    ...new Set(
+      allPlaces
+        .map(x => x.category)
+        .filter(Boolean)
+    )
+  ].sort();
+
+  categories.forEach(category => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = category;
+    option.textContent = category;
+
+    categoryFilter.appendChild(option);
+
+  });
+
+}
+
+function populateCabangFilter() {
+
+  const cabangFilter =
+    document.getElementById("cabangFilter");
+
+  cabangFilter.innerHTML =
+    `<option value="">Semua Cabang</option>`;
+
+  const cabangs = [
+    ...new Set(
+      allPlaces
+        .map(x => x.cabang)
+        .filter(Boolean)
+    )
+  ].sort();
+
+  cabangs.forEach(cabang => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = cabang;
+    option.textContent = cabang;
+
+    cabangFilter.appendChild(option);
+
+  });
+
 }
 
 // =========================
@@ -117,14 +292,16 @@ Papa.parse(SHEET_URL, {
 
       if (isNaN(lat) || isNaN(lng)) return;
 
-      const color = getColor(row.status);
+      const statusColor = getStatusColor(row.status);
+      const categoryColor = getCategoryColor(row.category);
 
       const marker = L.circleMarker([lat, lng], {
 
         radius: 8,
-        color,
-        fillColor: color,
-        fillOpacity: 0.8
+        color: statusColor,
+        fillColor: categoryColor,
+        fillOpacity: 1,
+        weight: 5
 
       }).addTo(map);
 
@@ -226,6 +403,9 @@ Papa.parse(SHEET_URL, {
 
     filteredPlaces = allPlaces;
 
+    populateCategoryFilter();
+    populateCabangFilter();
+
     renderSidebar();
 
   }
@@ -236,24 +416,17 @@ Papa.parse(SHEET_URL, {
 // =========================
 function renderSidebar() {
 
-  const placeList =
-    document.getElementById("place-list");
-
+  const placeList = document.getElementById("place-list");
   placeList.innerHTML = "";
 
-  const start =
-    (currentPage - 1) * ITEMS_PER_PAGE;
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
 
-  const end =
-    start + ITEMS_PER_PAGE;
-
-  const pageItems =
-    filteredPlaces.slice(start, end);
+  const pageItems = filteredPlaces.slice(start, end);
 
   pageItems.forEach(place => {
 
-    const card =
-      document.createElement("div");
+    const card = document.createElement("div");
 
     card.className = "place-card";
 
@@ -263,7 +436,7 @@ function renderSidebar() {
       </div>
 
       <div class="place-category">
-        ${categoryMap[place.category] || place.category}
+        ${place.category}
       </div>
 
       <div class="place-status status-${place.status}">
@@ -310,43 +483,23 @@ function renderSidebar() {
 // =========================
 function applyFilter() {
 
-  const search =
-    document
-      .getElementById("searchInput")
-      .value
-      .toLowerCase();
+  const search = document.getElementById("searchInput").value.toLowerCase();
 
-  const status =
-    document
-      .getElementById("statusFilter")
-      .value;
+  const status = document.getElementById("statusFilter").value;
 
-  const category =
-    document
-      .getElementById("categoryFilter")
-      .value;
+  const category = document.getElementById("categoryFilter").value;
   
-  const cabang = 
-    document  
-      .getElementById("cabangFilter")
-      .value;
+  const cabang =  document.getElementById("cabangFilter").value;
 
   filteredPlaces = allPlaces.filter(place => {
 
-    const matchSearch =
-      place.nama?.toLowerCase().includes(search);
+    const matchSearch = place.nama?.toLowerCase().includes(search);
 
-    const matchStatus =
-      !status ||
-      place.status === status;
+    const matchStatus = !status || place.status === status;
 
-    const matchCategory =
-      !category ||
-      place.category === category;
+    const matchCategory = !category || place.category === category;
 
-    const matchCabang = 
-      !cabang ||
-      place.cabang === cabang;
+    const matchCabang = !cabang || place.cabang === cabang;
 
     return (
       matchSearch &&
@@ -367,11 +520,9 @@ function applyFilter() {
 // =========================
 function renderPagination() {
 
-  const totalPages =
-    Math.ceil(filteredPlaces.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredPlaces.length / ITEMS_PER_PAGE);
 
-  const pagination =
-    document.getElementById("pagination");
+  const pagination = document.getElementById("pagination");
 
   pagination.innerHTML = `
 
@@ -398,8 +549,7 @@ function renderPagination() {
   `;
 
   // PREV
-  document
-    .getElementById("prevPage")
+  document.getElementById("prevPage")
     .onclick = () => {
 
       if(currentPage > 1){
@@ -413,8 +563,7 @@ function renderPagination() {
     };
 
   // NEXT
-  document
-    .getElementById("nextPage")
+  document.getElementById("nextPage")
     .onclick = () => {
 
       if(currentPage < totalPages){
@@ -428,8 +577,7 @@ function renderPagination() {
     };
 
   // INPUT PAGE
-  const pageInput =
-    document.getElementById("pageInput");
+  const pageInput = document.getElementById("pageInput");
 
   pageInput.addEventListener(
     "keydown",
@@ -526,93 +674,3 @@ function toggleSidebar() {
     }, 400);
   }
 }
-
-// Keyboard shortcut: tekan 'H' untuk hide/show sidebar
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'h' || e.key === 'H') {
-    // Cek kalo user nggak lagi ngetik di input
-    if (document.activeElement.tagName !== 'INPUT') {
-      toggleSidebar();
-    }
-  }
-});
-
-
-// const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// (async () => {
-//   while(true){
-//   allPlaces = [];
-//   // Hapus semua marker dari map
-//   map.eachLayer((layer) => {
-//     if (layer instanceof L.CircleMarker) {
-//       map.removeLayer(layer);
-//     }
-//   });
-  
-//   // Fetch ulang data
-//   Papa.parse(SHEET_URL, {
-//     download: true,
-//     header: true,
-//     complete: function(results) {
-//       results.data.forEach(row => {
-//         if (row.nama == "Radja Ketjil" || row.nama == "Alfamidi"){
-//             console.log(`state ${row.nama}: ${row.status}`)
-//         }
-//         if (!row.lat || !row.lng) return;
-        
-//         const lat = parseFloat(row.lat);
-//         const lng = parseFloat(row.lng);
-        
-//         if (isNaN(lat) || isNaN(lng)) return;
-        
-//         const color = getColor(row.status);
-        
-//         const marker = L.circleMarker([lat, lng], {
-//           radius: 8,
-//           color,
-//           fillColor: color,
-//           fillOpacity: 0.8
-//         }).addTo(map);
-        
-//         // Copy popup yang sama kayak sebelumnya
-//         marker.bindPopup(`
-//           <div style="min-width:200px;">
-//             <h3 style="margin:0 0 10px 0;">${row.nama}</h3>
-//             <div><b>Status:</b> ${row.status}</div>
-//             <div><b>Category:</b> ${row.category}</div>
-//             <div><b>Cabang:</b> ${row.cabang}</div>
-//             <br>
-//             <button onclick="
-//               const notesDiv = document.getElementById('notes-${row.nama.replace(/[^a-zA-Z0-9]/g, '_')}');
-//               if(notesDiv.style.display === 'none') {
-//                 notesDiv.style.display = 'block';
-//                 this.textContent = '📝 Sembunyikan Notes';
-//               } else {
-//                 notesDiv.style.display = 'none';
-//                 this.textContent = '📝 Lihat Notes';
-//               }
-//             " style="display:inline-block;padding:8px 12px;background:#34A853;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-bottom:10px;width:100%;">
-//               📝 Lihat Notes
-//             </button>
-//             <div id="notes-${row.nama.replace(/[^a-zA-Z0-9]/g, '_')}" style="display:none;background:#f9f9f9;padding:10px;border-radius:8px;margin-bottom:10px;border-left:4px solid #34A853;max-width:300px;word-wrap:break-word;white-space:pre-wrap;">
-//               ${row.notes || 'Tidak ada notes'}
-//             </div>
-//             <a href="https://www.google.com/maps/dir/?api=1&destination=${row.lat},${row.lng}" target="_blank" style="display:inline-block;padding:8px 12px;background:#4285F4;color:white;text-decoration:none;border-radius:8px;font-size:14px;">
-//               📍 Navigasi Google Maps
-//             </a>
-//           </div>
-//         `);
-        
-//         allPlaces.push({ ...row, lat, lng, marker });
-//       });
-      
-//       filteredPlaces = allPlaces;
-//       currentPage = Math.min(currentPage, Math.ceil(filteredPlaces.length / ITEMS_PER_PAGE));
-//       renderSidebar();
-//       console.log('✅ Data updated:', new Date().toLocaleTimeString());
-//     }
-//   });
-//     await sleep(10000); 
-//   }
-// })();
