@@ -165,33 +165,33 @@ addKCP(
 function getCategoryColor(category) {
 
   const colors = {
-    "Apotek": "#E91E63",                // pink
-    "Bengkel": "#607D8B",               // blue grey
-    "Cafe & Resto": "#ff5900",          // biru
-    "Commercial": "#9C27B0",            // ungu
-    "Dealer": "#f7997d",                // deep orange
-    "Developer": "#795548",             // coklat
-    "Education": "#ff0000",             // indigo
-    "Fashion": "#FF4081",               // pink terang
-    "Furniture": "#8D6E63",             // brown muda
-    "Hiburan": "#673AB7",               // deep purple
-    "Hobby": "#ca8cc9",                 // cyan
+  "Apotek": "#FF1493",               // deep pink
+  "Bengkel": "#8B4513",             // saddle brown
+  "Cafe & Resto": "#701414",        // orange red
+  "Commercial": "#9400D3",          // dark violet
+  "Dealer": "#6286d3",              // dark turquoise
+  "Developer": "#ab7171",           // brown
+  "Education": "#0000FF",           // pure blue
+  "Fashion": "#FF00FF",             // magenta
+  "Furniture": "#d59656",           // peru
+  "Hiburan": "#4B0082",             // indigo
+  "Hobby": "#00ffff",               // cyan
 
-    "Tempat Ibadah": "#1a3b59",         // blue
-    "Toko Bangunan": "#A1887F",         // brown
-    "Toko Elektronik": "#3949AB",       // indigo tua
+  "Tempat Ibadah": "#000080",       // navy
+  "Toko Bangunan": "#79f979",       // chocolate
+  "Toko Elektronik": "#4169E1",     // royal blue
 
-    "Klinik & Rumah Sakit": "#F44336",  // merah
-    "Lainnya": "#546E7A",               // slate
-    "Laundry": "#fed81c",               // cyan terang
-    "Mall": "#AB47BC",                  // purple terang
-    "Petshop": "#FF7043",               // orange coral
-    "Printing & Stationary": "#5C6BC0", // indigo muda
-    "Rent": "#8E24AA",                  // violet
-    "Salon & Beauty": "#EC407A",        // rose
-    "Service": "#7E57C2",               // lavender
-    "SPBU": "#D32F2F",                  // merah tua
-    "Supermarket & Grosir": "#c6f053"   // biru tua
+  "Klinik & Rumah Sakit": "#FF0000",// pure red
+  "Lainnya": "#585856",             // slate gray
+  "Laundry": "#fb6900",             // deep sky blue
+  "Mall": "#BA55D3",                // medium orchid
+  "Petshop": "#FF7F50",             // coral
+  "Printing & Stationary": "#1E90FF", // dodger blue
+  "Rent": "#8A2BE2",                // blue violet
+  "Salon & Beauty": "#FF69B4",      // hot pink
+  "Service": "#9932CC",             // dark orchid
+  "SPBU": "#b3ff00",                // firebrick
+  "Supermarket & Grosir": "#FFD700" // gold
   };
 
   return colors[category] || "#ffffff";
@@ -273,6 +273,48 @@ function populateCabangFilter() {
 
 }
 
+function getCategoryDash(category){
+
+  const group5 = [
+    "Cafe & Resto",
+    "Fashion",
+    "Salon & Beauty",
+    "Petshop",
+    "Laundry",
+    "Hiburan"
+  ];
+
+  const group6 = [
+    "Bengkel",
+    "Dealer",
+    "Toko Bangunan",
+    "Toko Elektronik",
+    "Furniture",
+    "Service"
+  ];
+
+  const group8 = [
+    "Commercial",
+    "Developer",
+    "Rent",
+    "Printing & Stationary",
+    "Hobby",
+    "Supermarket & Grosir",
+    "Lainnya"
+  ];
+
+  if(group5.includes(category))
+    return "5";
+
+  if(group6.includes(category))
+    return "6";
+
+  if(group8.includes(category))
+    return "8";
+
+  return null;
+}
+
 // =========================
 // LOAD DATA
 // =========================
@@ -294,6 +336,7 @@ Papa.parse(SHEET_URL, {
 
       const statusColor = getStatusColor(row.status);
       const categoryColor = getCategoryColor(row.category);
+      const dashArray = getCategoryDash(row.category);
 
       const marker = L.circleMarker([lat, lng], {
 
@@ -301,7 +344,8 @@ Papa.parse(SHEET_URL, {
         color: statusColor,
         fillColor: categoryColor,
         fillOpacity: 1,
-        weight: 5
+        weight: 5,
+        dashArray: dashArray
 
       }).addTo(map);
 
