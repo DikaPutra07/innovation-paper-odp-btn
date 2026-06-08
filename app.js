@@ -29,16 +29,39 @@ const cabangIcon = L.divIcon({
   className: "custom-cabang-marker",
   html: `
     <div style="
-      width: 0;
-      height: 0;
-      border-left: 12px solid transparent;
-      border-right: 12px solid transparent;
-      border-bottom: 22px solid #125EFA;
-      // filter: drop-shadow(0 0 6px rgba(230,57,70,0.7));
-    "></div>
+      position: relative;
+      width: 24px;
+      height: 24px;
+    ">
+
+      <!-- Segitiga luar -->
+      <div style="
+        position:absolute;
+        top:0;
+        left:0;
+        width:0;
+        height:0;
+        border-left:22px solid transparent;
+        border-right:22px solid transparent;
+        border-bottom:40px solid #125EFA;
+      "></div>
+
+      <!-- Segitiga dalam -->
+      <div style="
+        position:absolute;
+        top:10px;
+        left:8px;
+        width:0;
+        height:0;
+        border-left:14px solid transparent;
+        border-right:14px solid transparent;
+        border-bottom:26px solid white;
+      "></div>
+
+    </div>
   `,
-  iconSize: [20, 20],
-  iconAnchor: [14, 14]
+  iconSize: [24, 24],
+  iconAnchor: [12, 22]
 });
 
 const cabangMarker = L.marker(
@@ -73,15 +96,39 @@ const kcpIcon = L.divIcon({
   className: "custom-kcp-marker",
   html: `
     <div style="
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-bottom: 18px solid #38BDF8;
-    "></div>
+      position: relative;
+      width: 24px;
+      height: 24px;
+    ">
+
+      <!-- Segitiga luar -->
+      <div style="
+        position:absolute;
+        top:0;
+        left:0;
+        width:0;
+        height:0;
+        border-left:19px solid transparent;
+        border-right:19px solid transparent;
+        border-bottom:37px solid #38BDF8;
+      "></div>
+
+      <!-- Segitiga dalam -->
+      <div style="
+        position:absolute;
+        top:10px;
+        left:8px;
+        width:0;
+        height:0;
+        border-left:11px solid transparent;
+        border-right:11px solid transparent;
+        border-bottom:23px solid white;
+      "></div>
+
+    </div>
   `,
-  iconSize: [20, 20],
-  iconAnchor: [10, 18]
+  iconSize: [20,20],
+  iconAnchor: [10,18]
 });
 
 function addKCP(name, lat, lng) {
