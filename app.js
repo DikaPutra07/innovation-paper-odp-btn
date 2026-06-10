@@ -1,6 +1,3 @@
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6tFK2BQkjWzqp2Ot__bZiDWRCuCFHpXqTC8xKM00KJKDGEyctEUisS8VfoZykvBiUrrzSrc-11-CE/pub?output=csv";
-
 const ITEMS_PER_PAGE = 25;
 
 let allPlaces = [];
@@ -212,7 +209,7 @@ addKCP(
 function getCategoryColor(category) {
 
   const colors = {
-  "Apotek": "#FF1493",               // deep pink
+  "Apotek": "#FF1493",              // deep pink
   "Bengkel": "#8B4513",             // saddle brown
   "Cafe & Resto": "#701414",        // orange red
   "Commercial": "#9400D3",          // dark violet
@@ -362,10 +359,7 @@ function getCategoryDash(category){
   return null;
 }
 
-// =========================
-// LOAD DATA
-// =========================
-Papa.parse(SHEET_URL, {
+Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vR6tFK2BQkjWzqp2Ot__bZiDWRCuCFHpXqTC8xKM00KJKDGEyctEUisS8VfoZykvBiUrrzSrc-11-CE/pub?output=csv", {
 
   download: true,
   header: true,
